@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Weather Application</string>
+    <string name="temperature">%.1f ℉</string>
+</resources>

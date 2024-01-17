@@ -1,0 +1,63 @@
+package com.example.weather_application.viewModels
+
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.weather_application.models.dto.CurrentWeatherData
+import com.example.weather_application.models.repositories.WeatherInfoResponse
+import com.example.weather_application.models.repositories.WeatherRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+sealed class CurrentWeatherInfoState {
+    data class OnDataReady(val weatherInfo: CurrentWeatherData) : CurrentWeatherInfoState()
+    object OnError : CurrentWeatherInfoState()
+    object NoInfoFound: CurrentWeatherInfoState()
+}
+
+@HiltViewModel
+class WeatherViewModel @Inject constructor(
+    private val repository: WeatherRepository
+) : ViewModel() {
+
+    private val _weatherInfo: MutableLiveData<CurrentWeatherInfoState> = MutableLiveData()
+    val weatherInfo: LiveData<CurrentWeatherInfoState> = _weatherInfo
+
+    fun getCityCurrentWeather(cityName: String) {
+        viewModelScope.launch {
+            when (val response = repository.getCityCurrentWeather(cityName)) {
+                is WeatherInfoResponse.OnSuccess -> {
+                    response.currentData?.let {
+                        _weatherInfo.value = CurrentWeatherInfoState.OnDataReady(it)
+                    } ?: kotlin.run { _weatherInfo.value = CurrentWeatherInfoState.OnError }
+                }
+                is WeatherInfoResponse.NetworkError -> {
+                    _weatherInfo.value = CurrentWeatherInfoState.OnError
+                }
+                is WeatherInfoResponse.NoGeoCoordinateFound -> {
+                    _weatherInfo.value = CurrentWeatherInfoState.NoInfoFound
+                }
+            }
+        }
+    }
+
+    fun getCurrentWeatherInfo(long: String, lat: String) {
+        viewModelScope.launch {
+            when (val response = repository.getCurrentWeatherInfo(long = long, lat = lat)) {
+                is WeatherInfoResponse.OnSuccess -> {
+                    response.currentData?.let {
+                        _weatherInfo.value = CurrentWeatherInfoState.OnDataReady(it)
+                    } ?: kotlin.run { _weatherInfo.value = CurrentWeatherInfoState.OnError }
+                }
+                is WeatherInfoResponse.NetworkError -> {
+                    _weatherInfo.value = CurrentWeatherInfoState.OnError
+                }
+                is WeatherInfoResponse.NoGeoCoordinateFound -> {
+                    _weatherInfo.value = CurrentWeatherInfoState.NoInfoFound
+                }
+            }
+        }
+    }
+}
