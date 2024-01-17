@@ -4,6 +4,8 @@ plugins {
     id 'kotlin-kapt'
     id 'com.google.dagger.hilt.android'
 }
+def localProperties = new Properties()
+localProperties.load(new FileInputStream(rootProject.file("local.properties")))
 
 android {
     compileSdk 34
@@ -14,7 +16,7 @@ android {
         targetSdk 34
         versionCode 1
         versionName "1.0"
-
+        buildConfigField "String", "API_KEY", "\"" + localProperties['API_KEY'] + "\""
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 

@@ -40,12 +40,13 @@ class WeatherViewModel @Inject constructor(
                          **/
                         dataStoreRepo.putString(CITY_NAME_KEY, cityName)
                         _weatherInfo.value = CurrentWeatherInfoState.OnDataReady(it)
-                    } ?: kotlin.run { _weatherInfo.value = CurrentWeatherInfoState.OnError }
+                    } ?: kotlin.run { _weatherInfo.value = CurrentWeatherInfoState.NoInfoFound }
                 }
                 is WeatherInfoResponse.NetworkError -> {
                     _weatherInfo.value = CurrentWeatherInfoState.OnError
                 }
                 is WeatherInfoResponse.NoGeoCoordinateFound -> {
+                    //see if we can extract more info from the response and display to the user for clarity
                     _weatherInfo.value = CurrentWeatherInfoState.NoInfoFound
                 }
             }
