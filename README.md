@@ -12,6 +12,18 @@ API_KEY=ADD_YOUR_API_KEY_HERE
 
 https://github.com/honolinho/Weather_Application/assets/56179228/9ae081ae-676f-4c66-9c40-d4fe6a1a5db3
 
+## Libraries 
+Libraries used in the application are: 
+
+* Retofit: For api request
+* MockK: For unit testing
+* Datastore: For data storage
+* Hilt: For dependency injection
+* Glide: To load and cache inmages 
+
+
+
+
 
 
 
