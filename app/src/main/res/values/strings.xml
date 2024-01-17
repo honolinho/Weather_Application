@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Weather Application</string>
     <string name="temperature">%.1f ℉</string>
+    <string name="title_msg">Please click the search icon to input a city name</string>
+    <string name="temp_label">Temp: </string>
+    <string name="city_label">City: </string>
 </resources>
