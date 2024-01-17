@@ -4,6 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.example.weather_application.models.dto.CurrentWeatherData
 import com.example.weather_application.models.dto.Main
 import com.example.weather_application.models.dto.Weather
+import com.example.weather_application.models.repositories.DataStoreRepository
 import com.example.weather_application.models.repositories.WeatherInfoResponse
 import com.example.weather_application.models.repositories.WeatherRepository
 import com.example.weather_application.viewModels.CurrentWeatherInfoState
@@ -12,7 +13,6 @@ import com.google.common.truth.Truth
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.impl.annotations.MockK
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.setMain
@@ -34,7 +34,7 @@ class WeatherViewModelTest {
     private lateinit var repository: WeatherRepository
 
     @MockK
-    private lateinit var ioDispatcher: CoroutineDispatcher
+    private lateinit var dataStoreRepo: DataStoreRepository
 
     private lateinit var viewModel: WeatherViewModel
 
@@ -42,7 +42,7 @@ class WeatherViewModelTest {
     fun setup() {
         MockKAnnotations.init(this)
         Dispatchers.setMain(UnconfinedTestDispatcher())
-        viewModel = WeatherViewModel(repository)
+        viewModel = WeatherViewModel(repository, dataStoreRepo)
     }
 
     @Test

@@ -1,10 +1,7 @@
 package com.example.weather_application.views
 
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
-import android.Manifest.permission.ACCESS_FINE_LOCATION
-import android.content.Context
 import android.content.pm.PackageManager.PERMISSION_GRANTED
-import android.location.LocationManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Looper
@@ -77,7 +74,7 @@ class MainActivity : AppCompatActivity() {
                 val temp = data.weatherInfo.main.temp
                 binding.tvTemp.text = getString(R.string.temperature, temp)
                 binding.tvCityName.text = data.weatherInfo.name
-                val iconUrl = String.format(WEATHER_ICON_URL, data.weatherInfo.weather[0].icon )
+                val iconUrl = String.format(WEATHER_ICON_URL, data.weatherInfo.weather[0].icon)
                 GlideApp.with(this)
                     .load(iconUrl)
                     .into(binding.ivWeather)
@@ -107,21 +104,15 @@ class MainActivity : AppCompatActivity() {
                 permissions[ACCESS_COARSE_LOCATION] == true -> {
                     // Only approximate location access granted.
                     requestLocationUpdate()
-                    //  if (!isLocationEnabled(this)) showGPSNotEnabledDialog(mContext)
                 }
                 else -> {
                     // No location access granted.
+                    showProgressBar()
+                    viewModel.getSavedCityName()
                 }
             }
         }
-
-        locationPermissionRequest.launch(
-            arrayOf(
-                ACCESS_FINE_LOCATION,
-                ACCESS_COARSE_LOCATION
-            )
-        )
-
+        locationPermissionRequest.launch(arrayOf(ACCESS_COARSE_LOCATION))
     }
 
     private fun buildLocationCallBack() {
@@ -135,13 +126,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-    }
-
-    private fun isLocationEnabled(context: Context): Boolean {
-        val locationManager: LocationManager =
-            context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-                || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
 
     private fun requestLocationUpdate() {
@@ -173,6 +157,5 @@ class MainActivity : AppCompatActivity() {
         locationCallback?.let { fusedLocationClient.removeLocationUpdates(it) }
         locationCallback = null
         super.onDestroy()
-
     }
 }
