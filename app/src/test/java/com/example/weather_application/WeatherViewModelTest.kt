@@ -4,6 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.example.weather_application.models.dto.CurrentWeatherData
 import com.example.weather_application.models.dto.Main
 import com.example.weather_application.models.dto.Weather
+import com.example.weather_application.models.repositories.DataStoreRepository
 import com.example.weather_application.models.repositories.WeatherInfoResponse
 import com.example.weather_application.models.repositories.WeatherRepository
 import com.example.weather_application.viewModels.CurrentWeatherInfoState
@@ -12,7 +13,6 @@ import com.google.common.truth.Truth
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.impl.annotations.MockK
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.setMain
@@ -34,7 +34,7 @@ class WeatherViewModelTest {
     private lateinit var repository: WeatherRepository
 
     @MockK
-    private lateinit var ioDispatcher: CoroutineDispatcher
+    private lateinit var dataStoreRepo: DataStoreRepository
 
     private lateinit var viewModel: WeatherViewModel
 
@@ -42,7 +42,7 @@ class WeatherViewModelTest {
     fun setup() {
         MockKAnnotations.init(this)
         Dispatchers.setMain(UnconfinedTestDispatcher())
-        viewModel = WeatherViewModel(repository)
+        viewModel = WeatherViewModel(repository, dataStoreRepo)
     }
 
     @Test
@@ -84,6 +84,31 @@ class WeatherViewModelTest {
         Truth.assertThat(actual.weatherInfo.weather).isEqualTo(getWeatherData().weather)
         Truth.assertThat(actual.weatherInfo.name).isEqualTo(getWeatherData().name)
         Truth.assertThat(actual.weatherInfo.main.temp).isEqualTo(getWeatherData().main.temp)
+    }
+
+    @Test
+    fun `GIVEN the user has not granted location permission IF there is a saved city name THEN fetch the city weather info`() {
+        coEvery { dataStoreRepo.getString(allAny()) } returns "Chicago"
+        coEvery { repository.getCityCurrentWeather(allAny()) } returns WeatherInfoResponse.OnSuccess(
+            getWeatherData()
+        )
+        coEvery { dataStoreRepo.putString(allAny(), allAny()) } answers {}
+        viewModel.getSavedCityName()
+        val actual = viewModel.weatherInfo.value
+        Truth.assertThat(actual).isInstanceOf(CurrentWeatherInfoState::class.java)
+        (actual as CurrentWeatherInfoState.OnDataReady)
+        Truth.assertThat(actual.weatherInfo.weather).isEqualTo(getWeatherData().weather)
+        Truth.assertThat(actual.weatherInfo.name).isEqualTo(getWeatherData().name)
+        Truth.assertThat(actual.weatherInfo.main.temp).isEqualTo(getWeatherData().main.temp)
+    }
+
+    @Test
+    fun `GIVEN the user has not granted location permission IF there is no saved city name THEN no info is returned`() {
+        coEvery { dataStoreRepo.getString(allAny()) } returns ""
+        coEvery { dataStoreRepo.putString(allAny(), allAny()) } answers {}
+        viewModel.getSavedCityName()
+        val actual = viewModel.weatherInfo.value
+        Truth.assertThat(actual).isInstanceOf(CurrentWeatherInfoState.NoInfoFound::class.java)
     }
 
 
