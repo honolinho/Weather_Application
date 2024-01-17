@@ -86,6 +86,31 @@ class WeatherViewModelTest {
         Truth.assertThat(actual.weatherInfo.main.temp).isEqualTo(getWeatherData().main.temp)
     }
 
+    @Test
+    fun `GIVEN the user has not granted location permission IF there is a saved city name THEN fetch the city weather info`() {
+        coEvery { dataStoreRepo.getString(allAny()) } returns "Chicago"
+        coEvery { repository.getCityCurrentWeather(allAny()) } returns WeatherInfoResponse.OnSuccess(
+            getWeatherData()
+        )
+        coEvery { dataStoreRepo.putString(allAny(), allAny()) } answers {}
+        viewModel.getSavedCityName()
+        val actual = viewModel.weatherInfo.value
+        Truth.assertThat(actual).isInstanceOf(CurrentWeatherInfoState::class.java)
+        (actual as CurrentWeatherInfoState.OnDataReady)
+        Truth.assertThat(actual.weatherInfo.weather).isEqualTo(getWeatherData().weather)
+        Truth.assertThat(actual.weatherInfo.name).isEqualTo(getWeatherData().name)
+        Truth.assertThat(actual.weatherInfo.main.temp).isEqualTo(getWeatherData().main.temp)
+    }
+
+    @Test
+    fun `GIVEN the user has not granted location permission IF there is no saved city name THEN no info is returned`() {
+        coEvery { dataStoreRepo.getString(allAny()) } returns ""
+        coEvery { dataStoreRepo.putString(allAny(), allAny()) } answers {}
+        viewModel.getSavedCityName()
+        val actual = viewModel.weatherInfo.value
+        Truth.assertThat(actual).isInstanceOf(CurrentWeatherInfoState.NoInfoFound::class.java)
+    }
+
 
     private fun getWeatherData(): CurrentWeatherData {
         return CurrentWeatherData(
