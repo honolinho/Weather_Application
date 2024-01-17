@@ -5,11 +5,8 @@ A demo application showing weather forecast of your current location. The projec
 The project is built using the Clean architectural pattern MVVM. Clean architecture allows for the separation of concern which also makes testing easier.
 ## Project Setup
 To configure the project get the api key from Openweathermap. Add this to your local.properties file in the project
-<html>
-<body>
-<p>API_KEY=ADD_YOUR_API_KEY_HERE</p>
-</body>
-</html>
+
+API_KEY=ADD_YOUR_API_KEY_HERE
 
 ## Screen Recording 
 
