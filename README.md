@@ -1,6 +1,6 @@
 # Weather Application 
 ## App
-A demo application showing weather forecast of your current location. The project has been written in Kotlin language. For network requests, it uses Retrofit with LiveData. Hilt has been used for Dependency injection.
+A demo application showing weather forecast of your current location. The application also allows users to search weather forecast by city Name. The project has been written in Kotlin language. For network requests, it uses Retrofit with LiveData. Hilt has been used for Dependency injection.
 ## Architecture
 The project is built using the Clean architectural pattern MVVM. Clean architecture allows for the separation of concern which also makes testing easier.
 ## Project Setup
