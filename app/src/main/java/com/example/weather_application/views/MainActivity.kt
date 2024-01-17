@@ -44,6 +44,7 @@ class MainActivity : AppCompatActivity() {
     private fun setupSearchView() {
         val searchView = binding.searchView
         searchView.queryHint = "Search Here"
+        //rewrite this to search only when the user changes the input text not always when they click on search
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 query?.let {
@@ -96,22 +97,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun requestLocationPermission() {
-        val locationPermissionRequest = registerForActivityResult(
-            ActivityResultContracts.RequestMultiplePermissions()
-        ) { permissions ->
-
-            when {
-                permissions[ACCESS_COARSE_LOCATION] == true -> {
-                    // Only approximate location access granted.
-                    requestLocationUpdate()
-                }
-                else -> {
-                    // No location access granted.
-                    showProgressBar()
-                    viewModel.getSavedCityName()
+        val locationPermissionRequest =
+            registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+                when {
+                    permissions[ACCESS_COARSE_LOCATION] == true -> {
+                        // Only approximate location access granted.
+                        requestLocationUpdate()
+                    }
+                    else -> {
+                        // No location access granted.
+                        showProgressBar()
+                        viewModel.getSavedCityName()
+                    }
                 }
             }
-        }
         locationPermissionRequest.launch(arrayOf(ACCESS_COARSE_LOCATION))
     }
 

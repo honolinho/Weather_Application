@@ -33,6 +33,11 @@ class WeatherViewModel @Inject constructor(
             when (val response = repository.getCityCurrentWeather(cityName)) {
                 is WeatherInfoResponse.OnSuccess -> {
                     response.currentData?.let {
+                        /**
+                         * Given more time rewrite this so we can save only if a new city is entered
+                         * Also since we are re using this function when searching for previously saved cityName
+                         * identify a flag to make sure we are saving only when the user searches for a new input
+                         **/
                         dataStoreRepo.putString(CITY_NAME_KEY, cityName)
                         _weatherInfo.value = CurrentWeatherInfoState.OnDataReady(it)
                     } ?: kotlin.run { _weatherInfo.value = CurrentWeatherInfoState.OnError }
@@ -53,7 +58,7 @@ class WeatherViewModel @Inject constructor(
                 is WeatherInfoResponse.OnSuccess -> {
                     response.currentData?.let {
                         _weatherInfo.value = CurrentWeatherInfoState.OnDataReady(it)
-                    } ?: kotlin.run { _weatherInfo.value = CurrentWeatherInfoState.OnError }
+                    } ?: kotlin.run { _weatherInfo.value = CurrentWeatherInfoState.NoInfoFound }
                 }
                 is WeatherInfoResponse.NetworkError -> {
                     _weatherInfo.value = CurrentWeatherInfoState.OnError
@@ -73,5 +78,4 @@ class WeatherViewModel @Inject constructor(
             } else _weatherInfo.value = CurrentWeatherInfoState.NoInfoFound
         }
     }
-
 }
