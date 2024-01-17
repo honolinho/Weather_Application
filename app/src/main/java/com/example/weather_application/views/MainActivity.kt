@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupSearchView() {
         val searchView = binding.searchView
-        searchView.queryHint = "Search Here"
+        searchView.queryHint = "Input a city name "
         //rewrite this to search only when the user changes the input text not always when they click on search
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
